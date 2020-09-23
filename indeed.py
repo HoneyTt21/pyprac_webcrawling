@@ -5,8 +5,6 @@ LIMIT = 50
 URL = "https://kr.indeed.com/%EC%B7%A8%EC%97%85?as_and=python&limit=50"
 
 def extract_indeed_pages():
-  
-
   result = requests.get(URL)
 
   soup = BeautifulSoup(result.text, "html.parser")
@@ -39,17 +37,18 @@ def extract_jobs(html):
   location = html.find("span", {"class":"location accessible-contrast-color-location"}).string
 
   # data_id
-  data_id = html.find("div", {"class":"recJobLoc"}).get("id").strip("recJobLoc_")
+  data_id = html.find("div", {"class":"recJobLoc"}).get("id").strip("recJobLoc_").rstrip("%")
 
-  return ({"title" : title, "company" : company, "location" : location, "data-id" : data_id})
+  return ({"title" : title, "company" : company, "location" : location, "link" : f"https://kr.indeed.com/%EC%B1%84%EC%9A%A9%EB%B3%B4%EA%B8%B0?jk={data_id}"})
 
 def extract_indeed_jobs(last_page):
   jobs = []
-  # for page in range(last_page):
-  result = requests.get(f"{URL}&start={0 * LIMIT}")
-  soup = BeautifulSoup(result.text, "html.parser")
-  results = soup.find_all("div", {"class":"jobsearch-SerpJobCard"})
-  for res in results:
-    job = extract_jobs(res)
-    jobs.append(job)
+  for page in range(last_page):
+    print(f"Scrapping Page {page}")
+    result = requests.get(f"{URL}&start={page * LIMIT}")
+    soup = BeautifulSoup(result.text, "html.parser")
+    results = soup.find_all("div", {"class":"jobsearch-SerpJobCard"})
+    for res in results:
+      job = extract_jobs(res)
+      jobs.append(job)
   return jobs
