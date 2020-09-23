@@ -39,9 +39,9 @@ def extract_jobs(html):
   location = html.find("span", {"class":"location accessible-contrast-color-location"}).string
 
   # data_id
-  data_id = html.find("div", {"class":"jobsearch-SerpJobCard unifiedRow row result clickcard vjs-highlight"}).get("data-jk")
+  data_id = html.find("div", {"class":"recJobLoc"}).get("id").strip("recJobLoc_")
 
-  return ({"title" : title, "company" : company, "location" : location, "data-id" : data-id})
+  return ({"title" : title, "company" : company, "location" : location, "data-id" : data_id})
 
 def extract_indeed_jobs(last_page):
   jobs = []
